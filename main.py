@@ -1,7 +1,7 @@
+from collections import Counter
+
 def printCSV(nome_arquivo,atributo_objeto,x1, y1, x2, y2):
   print(f'{nome_arquivo},{atributo_objeto},{x1},{y1},{x2},{y2}')
-
-from collections import Counter
 
 def printPercentages(objects, appeared_elements):
     counter = Counter(objects)
@@ -17,27 +17,48 @@ def calculaMedias(lista):
   print(f'{sum([(n[2] - n[0]) for n in lista])/len(lista):.0f}', end =" ")
   print(f'{sum([(n[3] - n[1]) for n in lista])/len(lista):.0f}')
 
-# def busca_images(array):
-#   print(array)
-#   arrayFiltered = [n for n in array if 'tree' in n['objectAttribute'] ]
-#   newSet = set()
-#   for e in arrayFiltered:
-#     newSet.add(e['fileName'])
-#     files = []
-#   for e in newSet:
-#     if len([n for n in array if 'green-field' in n['objectAttribute'] or 'snowy-field' in n['objectAttribute'] or 'yellow-field' in n['objectAttribute'] ]) != 0: files.append(e)
-#   print(list(files))
+def prinPositions(array):
+  def printMoreCentral(array):
+    array = sorted([dict(fileName= n["fileName"], objectAttribute= n["objectAttribute"], coord=(((n["coord"][0]+ n["coord"][2])/2 -128)**2 + ((n["coord"][1]+ n["coord"][3])/2 -128)**2)**(1/2)) for n in array], key = lambda x: x["coord"])[0]
+    print(f'mais central: {array["objectAttribute"]},{array["fileName"]}')
+  def printMoreLeft(array):
+    array = sorted([dict(fileName= n["fileName"], objectAttribute= n["objectAttribute"], coord=(((n["coord"][0]+ n["coord"][2])/2 - 0)**2)**(1/2)) for n in array], key = lambda x: x["coord"])[0]
+    print(f'mais a esquerda: {array["objectAttribute"]},{array["fileName"]}')
+  def printMoreRight(array):
+    array = sorted([dict(fileName= n["fileName"], objectAttribute= n["objectAttribute"], coord=(((n["coord"][0]+ n["coord"][2])/2 - 256)**2)**(1/2)) for n in array], key = lambda x: x["coord"])[0]
+    print(f'mais a direita: {array["objectAttribute"]},{array["fileName"]}')
+  def printMoreAbove(array): 
+    array = sorted([dict(fileName= n["fileName"], objectAttribute= n["objectAttribute"], coord=(((n["coord"][1]+ n["coord"][3])/2 - 0)**2)**(1/2)) for n in array], key = lambda x: x["coord"])[0]
+    print(f'mais acima: {array["objectAttribute"]},{array["fileName"]}')
+  def printMoreBellow(array):
+    array = sorted([dict(fileName= n["fileName"], objectAttribute= n["objectAttribute"], coord=(((n["coord"][1]+ n["coord"][3])/2 - 256)**2)**(1/2)) for n in array], key = lambda x: x["coord"])[0]
+    print(f'mais abaixo: {array["objectAttribute"]},{array["fileName"]}')
+  def printLargestArea(array): 
+    array = sorted([dict(fileName= n["fileName"],objectAttribute=n["objectAttribute"], coord=((n["coord"][0]- n["coord"][2])*(n["coord"][1] - n["coord"][3])))for n in array], reverse = True, key = lambda x: x["coord"])[0]
+    print(f'maior area: {array["objectAttribute"]},{array["fileName"]}')
+  def printSmallestArea(array):
+    array = sorted([dict(fileName= n["fileName"],objectAttribute=n["objectAttribute"], coord=((n["coord"][0]- n["coord"][2])*(n["coord"][1] - n["coord"][3])))for n in array], key = lambda x: x["coord"])[0]
+    print(f'menor area: {array["objectAttribute"]},{array["fileName"]}')
+
+  printMoreCentral(array)
+  printMoreLeft(array)
+  printMoreRight(array)
+  printMoreAbove(array)
+  printMoreBellow(array)
+  printLargestArea(array)
+  printSmallestArea(array)
 
 def busca_images(array):
-    has_tree = set()
-    has_field = set()
+    has_tree = []
+    has_field = []
     for each in array:
         if each['objectAttribute'] == 'tree':
-            has_tree.add(each['fileName'])
+            has_tree.append(each['fileName'])
     for each in array:
         if each['fileName'] in has_tree and each['objectAttribute'] in ['green-field', 'yellow-field', 'snowy-field']:
-            has_field.add(each['fileName'])
-    final = list(has_tree - has_field)
+            has_field.append(each['fileName'])
+    final = [n for n in has_tree if n not in has_field]
+    final = list(dict.fromkeys(final))
     return final if len(final)!= 0 else 'nada'
 
 T, N = map(int, input().split())
@@ -78,8 +99,8 @@ if T == 4:
     nome_arquivo = input()
     atributo_objeto = input()
     x1, y1, x2, y2 = map(int, input().split())
-    coordenadas.append([x1, y1, x2, y2])
-  calculaMedias(coordenadas)
+    coordenadas.append(dict(fileName = nome_arquivo, objectAttribute=atributo_objeto,coord = [x1, y1, x2, y2]))
+  prinPositions(coordenadas)
 
 if T == 5:
   images = []
@@ -91,7 +112,6 @@ if T == 5:
     images.append(dict(fileName= nome_arquivo, objectAttribute=atributo_objeto))
     result = busca_images(images)
   if isinstance(result,  list):
-    for n in result:
-      print(n)
+    for n in result: print(n)
   else:
     print(result)
