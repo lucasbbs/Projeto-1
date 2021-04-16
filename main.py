@@ -9,7 +9,7 @@ def printPercentages(objects, appeared_elements):
     for e in appeared_elements:
         soma[e] = f'{(counter.get(e) or 0)/len(objects) * 100:.1f}'
     for i in soma:
-      print(f'{i}: {soma[i]}')
+      print(f'{i}: {soma[i]}') 
 
 def calculaMedias(lista):
   print(f'{sum([(n[0] + n[2])/2 for n in lista])/len(lista):.0f}', end =" ")
